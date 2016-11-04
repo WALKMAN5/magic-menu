@@ -1,0 +1,11 @@
+{
+  "name": "magic-menu",
+  "version": "1.0.0",
+  "description": "Responsive menu",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alex Simonok <sashasimonok@gmail.com>",
+  "license": "ISC"
+}
