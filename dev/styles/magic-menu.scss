@@ -1,0 +1,61 @@
+$bg: #ececec;
+$text: #212121;
+$border: #dfdfdf;
+
+
+
+.magic-menu {
+  margin: 0 0 -3px;
+  padding: 0;
+  list-style-type: none;
+  background: $bg;
+  display: inline-block;
+  width: 100%;
+  &__item {
+    float: left;
+    position: relative;
+    display: block;
+    transition:background .5s ease-out;
+    @media (max-width:320px){
+      position: static;
+    }
+    &:hover,
+    a:hover{
+      background:$border;
+    }
+    &:not(:last-of-type){
+      border-right:1px solid $border;
+    }
+    &_more{
+      display: none;
+      &:hover{
+        .magic-menu__more-menu{
+          visibility: visible;
+        }
+      }
+    }
+  }
+  &__link {
+    color: $text;
+    display: block;
+    padding: 1em 2em;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background .5s ease-out;
+  }
+  &__more-menu{
+    position: absolute;
+    top:100%;
+    right:0;
+    background:$bg;
+    padding:0;
+    margin:0;
+    list-style-type: none;
+    min-width:300px;
+    visibility: hidden;
+    z-index:2;
+    @media (max-width:320px){
+      width:100%;
+    }
+  }
+}
