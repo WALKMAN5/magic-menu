@@ -1,8 +1,8 @@
 # magic-menu
 
-h1 Getted started
+Getted started
 =====================
-### h3 HTML
+### HTML
 ```html
 <link rel="stylesheet" href="../css/magic-menu.min.css">
 
@@ -17,7 +17,7 @@ h1 Getted started
 
 <script src="magic-menu.min.js"></script>
 ```
-### h3 JS
+### JS
 ```js
 $('.example-menu').magicMenu({
     moreHtml: 'Ещё...'
