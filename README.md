@@ -2,6 +2,8 @@
 
 Getted started
 =====================
+Adaptive menu in one line with hiding menu items in a drop-down list
+---
 ### HTML
 ```html
 <link rel="stylesheet" href="../css/magic-menu.min.css">
