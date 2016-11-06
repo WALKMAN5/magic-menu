@@ -1,10 +1,9 @@
 $(document).ready(function(){
   $('.example-menu').magicMenu({
-    moreHtml: 'Ещё...'
+    moreHtml: 'Ещё...',
+    name: 'magicMenu1'
   });
   $('.example-menu2').magicMenu({
-    name: 'magicMenu'
+    name: 'magicMenu2'
   });
-  // $('.example-menu2').magicMenu({
-  // });
 });

@@ -13,7 +13,8 @@ var path = {
   dev: {
     styles: 'dev/styles/*.*',
     scss: 'dev/styles/',
-    scripts: 'dev/scripts/*.*',
+    scripts: 'dev/scripts/*.js',
+    scriptsVendors: 'dev/scripts/vendors/*.js',
     templates: 'dev/templates/*.*',
     demo: 'dev/demo/*.*'
   },
@@ -59,6 +60,11 @@ gulp.task('scripts', function(){
     .pipe(gulp.dest(path.public.js))
     .pipe(reload({stream: true}));
 });
+gulp.task('scriptsVendors', function(){
+  gulp.src(path.dev.scriptsVendors)
+    .pipe(gulp.dest(path.public.js))
+    .pipe(reload({stream: true}));
+});
 
 gulp.task('demo', function(){
   gulp.src(path.dev.demo)
@@ -72,8 +78,9 @@ gulp.task('webserver', function () {
 
 gulp.task('watch', function(){
   gulp.watch(path.dev.scripts, ['scripts']);
+  gulp.watch(path.dev.scriptsVendors, ['scriptsVendors']);
   gulp.watch(path.dev.styles, ['styles']);
   gulp.watch(path.dev.demo, ['demo']);
 })
 
-gulp.task('default', ['styles', 'scripts', 'demo', 'watch', 'webserver']);
+gulp.task('default', ['styles', 'scripts', 'scriptsVendors', 'demo', 'watch', 'webserver']);
