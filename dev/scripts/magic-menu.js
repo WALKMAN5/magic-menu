@@ -20,35 +20,57 @@
 
     }());
     Menu.prototype.setOptions = function(options){
+
         var self = this;
         self.name = options.name || 'default';
         self.moreHtml = options.moreHtml || 'More...';
+        self.className = options.className || 'magic-menu';
+        self.callbackInit = isFunc(options.callbackInit);
+        self.callbackHide = isFunc(options.callbackHide);
+        self.callbackShow = isFunc(options.callbackShow);
+
+
+        function isFunc(func){
+            if(func && typeof func == 'function')
+                return func
+            else
+                return function(){}
+        }
+
         return self;
     }
     Menu.prototype.init = function(){
-        var self = this;
+
+        var self = this,
+            className = self.className;
+
         self.$item = self.$menu.children();
         self.$link = self.$item.children('a');
-        self.$menu.addClass('magic-menu');
-        self.$item.addClass('magic-menu__item');
-        self.$link.addClass('magic-menu__link');
+
+        self.$menu.addClass(className);
+        self.$item.addClass(className + '__item');
+        self.$link.addClass(className + '__link');
+
+        self.isVisibleMore = false;
         self.$moreMenu = '';
+
         var $last = self.$item.last(),
             $item = $last.clone();
 
-        $item.addClass('magic-menu__item_more').children('a').html(self.options.moreHtml);
+        $item.addClass(className + '__item_more').children('a').html(self.options.moreHtml);
         $last.after($item);
 
-        $item.append('<ul class="magic-menu__more-menu"></ul>');
-        self.$moreMenu = $item.find('.magic-menu__more-menu');
+        $item.append('<ul class="' + className + '__more-menu"></ul>');
+        self.$moreMenu = $item.find('.' + className + '__more-menu');
         self.$itemMore = self.$item.last().next();
-        self.$item = self.$item.not('.magic-menu__item_more');
+        self.$item = self.$item.not('.' + className + '__item_more');
 
         self.$item.each(function(){
             var $item = $(this).clone();
-            $item.removeClass('magic-menu__item').children('a');
+            $item.removeClass(className + '__item').addClass(className + '__item_more').children('a');
             self.$moreMenu.append($item);
         });
+        self.callbackInit(self.$menu);
     }
     Menu.prototype.match = function(){
 
@@ -59,32 +81,47 @@
             $itemMore = self.$itemMore,
             widthItems = 0,
             length = $item.length - 1,
-            isVisibleMore = false,
-            excessSize = 0;
+            excessSize = 0,
+            i;
 
         $item.each(function () {
             widthItems += $(this).outerWidth();
-            $(this).data('width', $(this).outerWidth());
         });
-        widthItems += $itemMore.outerWidth();
 
-        for (var i = length; i >= 0; i--) {
+        if((!self.isVisibleMore && widthItems > widthMenu) || self.isVisibleMore)
+            widthItems += $itemMore.outerWidth();
+
+        for (i = length; i >= 0; i--) {
             excessSize += $item.eq(i).outerWidth();
 
             if (widthItems - excessSize + $item.eq(i).outerWidth() >= widthMenu) {
-                $item.eq(i).hide();
-                $subItem.eq(i).show();
+
+                if($item.eq(i).is(':visible')) {
+                    $item.eq(i).hide();
+                    $subItem.eq(i).show();
+                    self.isVisibleMore = true;
+                    console.log(self.$menu);
+                    console.log('visibleMore', self.isVisibleMore);
+                    self.callbackHide($item.eq(i), $subItem.eq(i));
+                }
             } else {
-                $item.eq(i).show();
-                $subItem.eq(i).hide();
+
+                if($item.eq(i).is(':hidden')) {
+                    $item.eq(i).show();
+                    $subItem.eq(i).hide();
+                    self.callbackShow($item.eq(i), $subItem.eq(i));
+                }
             }
 
             if ($item.is(':hidden')) {
                 $itemMore.show();
-            } else {
+            }
+            else {
                 $itemMore.hide();
+                self.isVisibleMore = false;
             }
         }
+
     }
     Menu.prototype.initEvents = function(){
 
@@ -111,10 +148,6 @@
         }
         return menu;
 
-
-
-
-        // $(window).on('resize', self.match);
     };
 
 })($);
