@@ -1,13 +1,11 @@
 (function($){
     'use strict';
-
     var Menu = {};
 
-    Menu = (function() {
-
-        function Menu(element, options) {
-
+    Menu = (function(){
+        function Menu(element, options){
             var self = this;
+
             self.$menu = $(element);
             self.options = self.setOptions(options);
 
@@ -20,8 +18,15 @@
 
     }());
     Menu.prototype.setOptions = function(options){
+        function isFunc(func){
+            if (func && typeof func == 'function'){
+                return func;
+            }
+            return function(){};
+        }
 
         var self = this;
+
         self.name = options.name || 'default';
         self.moreHtml = options.moreHtml || 'More...';
         self.className = options.className || 'magic-menu';
@@ -29,18 +34,10 @@
         self.callbackHide = isFunc(options.callbackHide);
         self.callbackShow = isFunc(options.callbackShow);
 
-
-        function isFunc(func){
-            if(func && typeof func == 'function')
-                return func
-            else
-                return function(){}
-        }
-
         return self;
-    }
-    Menu.prototype.init = function(){
+    };
 
+    Menu.prototype.init = function(){
         var self = this,
             className = self.className;
 
@@ -57,7 +54,10 @@
         var $last = self.$item.last(),
             $item = $last.clone();
 
-        $item.addClass(className + '__item_more').children('a').html(self.options.moreHtml);
+        $item
+            .addClass(className + '__item_more')
+            .children('a')
+                .html(self.options.moreHtml);
         $last.after($item);
 
         $item.append('<ul class="' + className + '__more-menu"></ul>');
@@ -67,13 +67,16 @@
 
         self.$item.each(function(){
             var $item = $(this).clone();
-            $item.removeClass(className + '__item').addClass(className + '__item_more').children('a');
+
+            $item
+                .removeClass(className + '__item')
+                .addClass(className + '__item_more')
+                .children('a');
             self.$moreMenu.append($item);
         });
         self.callbackInit(self.$menu);
-    }
+    };
     Menu.prototype.match = function(){
-
         var self = this,
             widthMenu = self.$menu.outerWidth(),
             $subItem = self.$moreMenu.children('li'),
@@ -84,19 +87,20 @@
             excessSize = 0,
             i;
 
-        $item.each(function () {
+        $item.each(function(){
             widthItems += $(this).outerWidth();
         });
 
-        if((!self.isVisibleMore && widthItems > widthMenu) || self.isVisibleMore)
+        if (!self.isVisibleMore && widthItems > widthMenu || self.isVisibleMore){
             widthItems += $itemMore.outerWidth();
+        }
 
-        for (i = length; i >= 0; i--) {
+        for (i = length; i >= 0; i--){
             excessSize += $item.eq(i).outerWidth();
 
-            if (widthItems - excessSize + $item.eq(i).outerWidth() >= widthMenu) {
+            if (widthItems - excessSize + $item.eq(i).outerWidth() >= widthMenu){
 
-                if($item.eq(i).is(':visible')) {
+                if ($item.eq(i).is(':visible')){
                     $item.eq(i).hide();
                     $subItem.eq(i).show();
                     self.isVisibleMore = true;
@@ -104,46 +108,43 @@
                     console.log('visibleMore', self.isVisibleMore);
                     self.callbackHide($item.eq(i), $subItem.eq(i));
                 }
-            } else {
+            } else{
 
-                if($item.eq(i).is(':hidden')) {
+                if ($item.eq(i).is(':hidden')){
                     $item.eq(i).show();
                     $subItem.eq(i).hide();
                     self.callbackShow($item.eq(i), $subItem.eq(i));
                 }
             }
 
-            if ($item.is(':hidden')) {
+            if ($item.is(':hidden')){
                 $itemMore.show();
             }
-            else {
+            else{
                 $itemMore.hide();
                 self.isVisibleMore = false;
             }
         }
 
-    }
+    };
     Menu.prototype.initEvents = function(){
-
         var self = this,
             $win = $(window);
 
         $win.on('resize', function(){
             self.match();
         });
-    }
-    $.fn.magicMenu = function (options) {
-
+    };
+    $.fn.magicMenu = function(options){
         var menu = this,
-            opt = options,
             length = menu.length,
             i;
 
-        if(length){
-            for(i = 0; i < length; i++){
-                menu[i].menu = new Menu(menu[i], opt);
+        if (length){
+            for (i = 0; i < length; i++){
+                menu[i].menu = new Menu(menu[i], options);
             }
-        }else{
+        } else{
             console.error('no elements');
         }
         return menu;
@@ -151,4 +152,3 @@
     };
 
 })($);
-

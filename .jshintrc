@@ -1,0 +1,27 @@
+{
+//  Enforcing options
+  "predef": [ "MY_GLOBAL" ],
+  "curly": true,
+  "forin": true,
+  "freeze": true,
+  "funcscope": true,
+  "futurehostile": true,
+  "latedef": true,
+  "maxerr": 50,
+  "maxparams": 3,
+  "noarg": true,
+  "nocomma": true,
+  "nonew": true,
+  "notypeof": true,
+  "shadow": true,
+  "singleGroups": true,
+  "strict":true,
+  "undef": true,
+  "unused": true,
+//  relaxing
+  "lastsemic": true,
+//  Environments
+  "browser": true,
+  "devel": true,
+  "jquery": true
+}
