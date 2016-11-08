@@ -58,7 +58,10 @@
         self.$moreItem.append(self.$moreMenu);
         self.$menu.append(self.$moreItem);
         self.$item = self.$item.not('.' + className + '__item_more');
+        self.isVisibleMore = false;
+
         console.timeEnd('init');
+
         self.$menu.trigger('init', [this.$menu]);
     };
     Menu.prototype.match = function(){
@@ -70,37 +73,48 @@
             $itemMore = self.$moreItem,
             $currentItem,
             $currentSubItem,
-            length = $item.length - 1,
+            length = $item.length,
             excessSize = 0,
             i,
-            lastIndex = length;
+            lastIndex = length,
+            addWidth = $itemMore.outerWidth();
 
-        console.time('for');
         for (i = 0; i <= length; i++){
-            console.log($item.eq(i).outerWidth());
-            excessSize += $item.eq(i).outerWidth();
             $currentItem = $item.eq(i);
             $currentSubItem = $subItem.eq(i);
+            excessSize += $currentItem.outerWidth();
+
             if($currentItem.is(':hidden')){
                 $currentItem.show();
             }
+
             if($currentSubItem.is(':hidden')){
                 $currentSubItem.show();
+
             }
-            if(excessSize + $itemMore.outerWidth() > widthMenu){
+
+            if(excessSize + addWidth > widthMenu){
                 lastIndex = i;
                 break;
             }
         }
         if(lastIndex < length){
             $itemMore.show();
+            self.isVisibleMore = true;
         }else{
+            self.isVisibleMore = false;
             $itemMore.hide();
         }
+        // if(self.isVisibleMore){
+        //     excessSize += $itemMore.outerWidth();
+        // }
         $item.slice(lastIndex).hide();
-        $subItem.slice(0, lastIndex).hide();
-        $subItem.slice(lastIndex).show();
-        console.timeEnd('for');
+        $subItem
+            .slice(0, lastIndex)
+                .hide()
+            .end()
+            .slice(lastIndex)
+                .show();
 
         console.timeEnd('Match');
     };
