@@ -11,6 +11,7 @@ $border: #dfdfdf;
   background: $bg;
   display: inline-block;
   width: 100%;
+  position:relative;
   &__item {
     float: left;
     position: relative;
@@ -27,12 +28,17 @@ $border: #dfdfdf;
       border-right:1px solid $border;
     }
     &_more{
-      display: none;
+      //display: none;
       &:hover{
         .magic-menu__more-menu{
           visibility: visible;
+          opacity:1;
+          max-height:inherit;
         }
       }
+    }
+    &-more{
+      //display: none;
     }
   }
   &__link {
@@ -54,8 +60,12 @@ $border: #dfdfdf;
     min-width:300px;
     visibility: hidden;
     z-index:2;
+    opacity:0;
+    transition:opacity .5s ease-out;
+    max-height: 0;
+    overflow: hidden;
     @media (max-width:320px){
-      width:100%;
+      min-width:100%;
     }
   }
 }

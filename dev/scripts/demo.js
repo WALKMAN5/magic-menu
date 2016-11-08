@@ -5,18 +5,19 @@ $(document).ready(function(){
         name: 'magicMenu1',
         callbackHide: 'hello'
     });
-    $('.example-menu2').magicMenu({
-        name: 'magicMenu2',
-        moreHtml: 'Ещёёёёёёёё...',
-        className: 'magic-menu',
-        callbackInit: function(menu){
+    $('.example-menu2')
+        .on('init', function(event, menu){
             console.log('init', menu);
-        },
-        callbackHide: function(item, subItem){
-            console.log('hidden', item, subItem);
-        },
-        callbackShow: function(item, subItem){
-            console.log('show', item, subItem);
-        }
-    });
+        })
+        .magicMenu({
+            name: 'magicMenu2',
+            moreHtml: 'Ещёёёёёёёё...',
+            className: 'magic-menu'
+        })
+        .on('afterHide', function(event, item, subItem){
+            console.log('afterHide', $(item), $(subItem));
+        })
+        .on('afterShow', function(event, item, subItem){
+            console.log('afterShow', $(item), $(subItem));
+        });
 });

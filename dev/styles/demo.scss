@@ -44,3 +44,18 @@ html, body {
 .example-menu2{
   background:lightgrey;
 }
+.magic-menu{
+  &__item-more{
+    transition: margin .5s ease-out, opacity .5s ease-out;
+    margin:10px 0;
+    opacity:0;
+  }
+  &__item{
+    &:hover{
+      .magic-menu__item-more{
+        margin:0;
+        opacity:1;
+      }
+    }
+  }
+}

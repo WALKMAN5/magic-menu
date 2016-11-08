@@ -4,6 +4,7 @@
 
     Menu = (function(){
         function Menu(element, options){
+            console.time('initMenu');
             var self = this;
 
             self.$menu = $(element);
@@ -12,32 +13,23 @@
             self.init();
             self.match();
             self.initEvents();
+            console.timeEnd('initMenu');
         }
 
         return Menu;
-
     }());
     Menu.prototype.setOptions = function(options){
-        function isFunc(func){
-            if (func && typeof func == 'function'){
-                return func;
-            }
-            return function(){};
-        }
-
         var self = this;
 
         self.name = options.name || 'default';
         self.moreHtml = options.moreHtml || 'More...';
         self.className = options.className || 'magic-menu';
-        self.callbackInit = isFunc(options.callbackInit);
-        self.callbackHide = isFunc(options.callbackHide);
-        self.callbackShow = isFunc(options.callbackShow);
 
         return self;
     };
 
     Menu.prototype.init = function(){
+        console.time('init');
         var self = this,
             className = self.className;
 
@@ -51,88 +43,83 @@
         self.isVisibleMore = false;
         self.$moreMenu = '';
 
-        var $last = self.$item.last(),
-            $item = $last.clone();
+        self.$moreItem = self.$item.eq(0).clone();
 
-        $item
+        self.$moreItem
             .addClass(className + '__item_more')
             .children('a')
-                .html(self.options.moreHtml);
-        $last.after($item);
-
-        $item.append('<ul class="' + className + '__more-menu"></ul>');
-        self.$moreMenu = $item.find('.' + className + '__more-menu');
-        self.$itemMore = self.$item.last().next();
+                .html(self.options.moreHtml)
+                .attr('href', '#more');
+        self.$moreMenu = $('<ul class="' + className + '__more-menu">');
+        self.$moreMenu.append(self.$item.clone())
+                .children()
+                    .removeClass(className + '__item')
+                    .addClass(className + '__item-more');
+        self.$moreItem.append(self.$moreMenu);
+        self.$menu.append(self.$moreItem);
         self.$item = self.$item.not('.' + className + '__item_more');
-
-        self.$item.each(function(){
-            var $item = $(this).clone();
-
-            $item
-                .removeClass(className + '__item')
-                .addClass(className + '__item_more')
-                .children('a');
-            self.$moreMenu.append($item);
-        });
-        self.callbackInit(self.$menu);
+        console.timeEnd('init');
+        self.$menu.trigger('init', [this.$menu]);
     };
     Menu.prototype.match = function(){
+        console.time('Match');
         var self = this,
             widthMenu = self.$menu.outerWidth(),
             $subItem = self.$moreMenu.children('li'),
             $item = self.$item,
-            $itemMore = self.$itemMore,
-            widthItems = 0,
+            $itemMore = self.$moreItem,
+            $currentItem,
+            $currentSubItem,
             length = $item.length - 1,
             excessSize = 0,
-            i;
+            i,
+            lastIndex = length;
 
-        $item.each(function(){
-            widthItems += $(this).outerWidth();
-        });
-
-        if (!self.isVisibleMore && widthItems > widthMenu || self.isVisibleMore){
-            widthItems += $itemMore.outerWidth();
-        }
-
-        for (i = length; i >= 0; i--){
+        console.time('for');
+        for (i = 0; i <= length; i++){
+            console.log($item.eq(i).outerWidth());
             excessSize += $item.eq(i).outerWidth();
-
-            if (widthItems - excessSize + $item.eq(i).outerWidth() >= widthMenu){
-
-                if ($item.eq(i).is(':visible')){
-                    $item.eq(i).hide();
-                    $subItem.eq(i).show();
-                    self.isVisibleMore = true;
-                    console.log(self.$menu);
-                    console.log('visibleMore', self.isVisibleMore);
-                    self.callbackHide($item.eq(i), $subItem.eq(i));
-                }
-            } else{
-
-                if ($item.eq(i).is(':hidden')){
-                    $item.eq(i).show();
-                    $subItem.eq(i).hide();
-                    self.callbackShow($item.eq(i), $subItem.eq(i));
-                }
+            $currentItem = $item.eq(i);
+            $currentSubItem = $subItem.eq(i);
+            if($currentItem.is(':hidden')){
+                $currentItem.show();
             }
-
-            if ($item.is(':hidden')){
-                $itemMore.show();
+            if($currentSubItem.is(':hidden')){
+                $currentSubItem.show();
             }
-            else{
-                $itemMore.hide();
-                self.isVisibleMore = false;
+            if(excessSize + $itemMore.outerWidth() > widthMenu){
+                lastIndex = i;
+                break;
             }
         }
+        if(lastIndex < length){
+            $itemMore.show();
+        }else{
+            $itemMore.hide();
+        }
+        $item.slice(lastIndex).hide();
+        $subItem.slice(0, lastIndex).hide();
+        $subItem.slice(lastIndex).show();
+        console.timeEnd('for');
 
+        console.timeEnd('Match');
     };
     Menu.prototype.initEvents = function(){
         var self = this,
             $win = $(window);
 
-        $win.on('resize', function(){
+        $win.bind('resizeEnd', function(){
+            console.log('resizeEnd');
             self.match();
+        });
+        $win.on('resize', function(){
+
+            if(this.resizeTO){
+                clearTimeout(this.resizeTO);
+            }
+            this.resizeTO = setTimeout(function(){
+                $(this).trigger('resizeEnd');
+            }, 0);
         });
     };
     $.fn.magicMenu = function(options){
